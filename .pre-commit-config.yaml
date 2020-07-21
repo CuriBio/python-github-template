@@ -81,7 +81,7 @@ repos:
     -   id: mypy
 
 -   repo: https://github.com/pre-commit/pygrep-hooks
-    rev: 'v1.4.2'  # pick a git hash / tag to point to
+    rev: 'v1.5.1'  # pick a git hash / tag to point to
     hooks:
     -   id: python-check-blanket-noqa
     -   id: python-check-mock-methods
