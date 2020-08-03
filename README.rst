@@ -9,6 +9,9 @@ Steps to create repo:
    - Publish repo
    - In Actions -> Dev: click Run workflow. Wait until workflow finishes
    - In Settings -> Security & analysis: enable Dependabot security updates
+   - In Setting -> Options, under Merge Button:
+      - Make sure "automatically delete head branches" is checked
+      - Make sure squash merging" is NOT checked
    - In Settings -> Branches:
       - Add Rule with master specified as Branch pattern name
          - check Require pull requests reviews before merging
