@@ -7,6 +7,7 @@ Steps to create repo:
    - Check box that says `include all branches`
    - Set repo to public
    - Publish repo
+   - To stop error messages about `master` and `development` branches not sharing any history, clone the repo, checkout development and run `git rebase -i origin/master` then `git push -f`
    - In Actions -> Dev: click Run workflow. Wait until workflow finishes
    - In Settings -> Security & analysis: enable Dependabot security updates
    - In Setting -> Options, under Merge Button:
