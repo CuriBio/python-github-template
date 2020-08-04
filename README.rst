@@ -1,4 +1,4 @@
-After creating a copy of this template, change the name of the package in `setup.py`, `pytest.ini`, `MANIFEST.in`, `codebuild_formation.yaml` and the subfolder within the `src` directory.
+After creating a copy of this template, change the name of the package in `setup.py`, `pytest.ini`, `MANIFEST.in`, `codebuild_formation.yaml` and the subfolder within the `src` directory.  In the Readme, change the link in Code Coverage to the new repo.
 Before CodeBuild can automatically publish to PyPI, the package must be registered using command `twine register`: https://twine.readthedocs.io/en/latest/#twine-register
 
 Steps to create repo:
@@ -7,6 +7,7 @@ Steps to create repo:
    - Check box that says `include all branches`
    - Set repo to public
    - Publish repo
+   - To stop error messages about `master` and `development` branches not sharing any history, clone the repo, checkout development and run `git rebase -i origin/master` then `git push -f`
    - In Actions -> Dev: click Run workflow. Wait until workflow finishes
    - In Settings -> Security & analysis: enable Dependabot security updates
    - In Setting -> Options, under Merge Button:
@@ -18,7 +19,7 @@ Steps to create repo:
          - check Dismiss stale pull requests
          - check Require Review from Code Owners
          - check Require status checks before merging
-         - Under status checks, check all of the python checks except python 3.6
+         - Under status checks, check all of the python checks (6 total)
          - check Include administrators
          - check Restrict who can push to matching branches
       - Add Rule with development specified as Branch pattern name
@@ -33,3 +34,7 @@ Steps to create repo:
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
+
+.. image:: https://codecov.io/gh/CuriBio/python-github-template/branch/development/graph/badge.svg
+  :target: https://codecov.io/gh/CuriBio/python-github-template
+
