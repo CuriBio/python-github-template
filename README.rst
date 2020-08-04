@@ -18,7 +18,7 @@ Steps to create repo:
          - check Dismiss stale pull requests
          - check Require Review from Code Owners
          - check Require status checks before merging
-         - Under status checks, check all of the python checks except python 3.6
+         - Under status checks, check all of the python checks (6 total)
          - check Include administrators
          - check Restrict who can push to matching branches
       - Add Rule with development specified as Branch pattern name
