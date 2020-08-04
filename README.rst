@@ -1,4 +1,4 @@
-After creating a copy of this template, change the name of the package in `setup.py`, `pytest.ini`, `MANIFEST.in`, `codebuild_formation.yaml` and the subfolder within the `src` directory.
+After creating a copy of this template, change the name of the package in `setup.py`, `pytest.ini`, `MANIFEST.in`, `codebuild_formation.yaml` and the subfolder within the `src` directory.  In the Readme, change the link in Code Coverage to the new repo.
 Before CodeBuild can automatically publish to PyPI, the package must be registered using command `twine register`: https://twine.readthedocs.io/en/latest/#twine-register
 
 Steps to create repo:
@@ -33,3 +33,7 @@ Steps to create repo:
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
+
+.. image:: https://codecov.io/gh/CuriBio/python-github-template/branch/development/graph/badge.svg
+  :target: https://codecov.io/gh/CuriBio/python-github-template
+
