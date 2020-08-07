@@ -1,4 +1,4 @@
-After creating a copy of this template, change the name of the package in `setup.py`, `pytest.ini`, `MANIFEST.in`, `codebuild_formation.yaml` and the subfolder within the `src` directory.  In the Readme, change the all the `python-github-template` in links to point to the new repo name.
+After creating a copy of this template, change the name of the package in `setup.py`, `setup.cfg`, `pytest.ini`, `MANIFEST.in`, `codebuild_formation.yaml` and the subfolder within the `src` directory.  In the Readme, change the all the `python-github-template` in links to point to the new repo name.
 Before CodeBuild can automatically publish to PyPI, the package must be registered using command `twine register`: https://twine.readthedocs.io/en/latest/#twine-register
 
 Steps to create repo:
@@ -25,8 +25,27 @@ Steps to create repo:
       - Add Rule with development specified as Branch pattern name
          - repeat master branch steps
 
+.. image:: https://img.shields.io/pypi/v/python-github-template.svg
+    :target: https://pypi.org/project/python-github-template/
+
+.. image:: https://pepy.tech/badge/python-github-template
+  :target: https://pepy.tech/project/python-github-template
+
+.. image:: https://img.shields.io/pypi/pyversions/python-github-template.svg
+    :target: https://pypi.org/project/python-github-template/
+
 .. image:: https://github.com/CuriBio/python-github-template/workflows/Dev/badge.svg?branch=development
    :alt: Development Branch Build
+
+.. image:: https://codecov.io/gh/CuriBio/python-github-template/branch/development/graph/badge.svg
+  :target: https://codecov.io/gh/CuriBio/python-github-template
+
+..
+   If this library uses readthedocs then put that badge here
+   .. image:: https://readthedocs.org/projects/python-github-template/badge/?version=latest
+     :target: https://python-github-template.readthedocs.io/en/latest/?badge=latest
+     :alt: Documentation Status
+
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
@@ -34,7 +53,3 @@ Steps to create repo:
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
-
-.. image:: https://codecov.io/gh/CuriBio/python-github-template/branch/development/graph/badge.svg
-  :target: https://codecov.io/gh/CuriBio/python-github-template
-
