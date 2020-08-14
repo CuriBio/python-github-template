@@ -8,7 +8,7 @@
 # pip install -e .
 
 pre-commit==2.6.0 # run 'pre-commit install' initially to install the git hooks
-pytest==5.4.3
+pytest==6.0.1
 pytest-cov==2.10.0
 pytest-randomly==3.4.0
 sphinx==3.1.2
