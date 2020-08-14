@@ -10,7 +10,7 @@ updates:
     pull-request-branch-name:
       # Separate sections of the branch name with a hyphen
       # for example, `dependabot-npm_and_yarn-next_js-acorn-6.4.1`
-      separator: "--"
+      separator: "-"
 
   - package-ecosystem: "github-actions"
     # Workflow files stored in the
@@ -23,4 +23,4 @@ updates:
     pull-request-branch-name:
       # Separate sections of the branch name with a hyphen
       # for example, `dependabot-npm_and_yarn-next_js-acorn-6.4.1`
-      separator: "--"
+      separator: "-"
