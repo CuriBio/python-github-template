@@ -59,20 +59,23 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: venv\Scripts\Activate.ps1
 
-      - name: Install dependencies
+      - name: Display Pip Version and confirm environment empty
         run: |
           pip -V
           pip freeze
-          pip install -r requirements-dev.txt
-          pip install -e .
-          pip freeze
-      - name: Run pre-commit hooks and prerelease to check packaging compatibilty
+      - name: Install Dev Dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Install Main Package
+        run: pip install -e .
+      - name: Log full installed packages
+        run: pip freeze
+
+      - name: Run pre-commit hooks
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == 3.7
         # only enable pre-commit on the fastest job
         run: |
           pre-commit install
           pre-commit run -a
-          python3 prerelease.py --no-input
 
       - name: Run Tests with randomly generated seed
         if: github.event.inputs.randomlyseed == ''
@@ -99,3 +102,7 @@ jobs:
           env_vars: OS,PYTHON
           name: codecov-umbrella
           fail_ci_if_error: true
+
+      - name: Run prerelease to check packaging compatibilty
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == 3.7
+        run: python3 prerelease.py --no-input
