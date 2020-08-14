@@ -16,16 +16,14 @@ Steps to create repo:
       - Make sure "automatically delete head branches" is checked
       - Make sure squash merging" is NOT checked
    - In Settings -> Branches:
-      - Add Rule with master specified as Branch pattern name
+      - Add Rule with [dm][ea][vs][et][le][or]* specified as Branch pattern name
          - check Require pull requests reviews before merging
          - check Dismiss stale pull requests
          - check Require Review from Code Owners
          - check Require status checks before merging
-         - Under status checks, check all of the python checks (6 total), and also the .github/dependabot.yaml check
+         - Under status checks, check all of the python checks (6 total)
          - check Include administrators
          - check Restrict who can push to matching branches
-      - Add Rule with development specified as Branch pattern name
-         - repeat master branch steps
 
 .. image:: https://img.shields.io/pypi/v/python-github-template.svg
     :target: https://pypi.org/project/python-github-template/
