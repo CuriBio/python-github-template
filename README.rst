@@ -27,6 +27,7 @@ Steps to create repo:
       - Add Rule with development specified as Branch pattern name
          - repeat master branch steps
 
+
 .. image:: https://img.shields.io/pypi/v/python-github-template.svg
     :target: https://pypi.org/project/python-github-template/
 
