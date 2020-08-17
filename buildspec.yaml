@@ -26,8 +26,9 @@ phases:
       - . venv/bin/activate
       - echo "Upgrading pip"
       - pip install pip==20.0.2 --upgrade
-      - echo "Installing developent/testing packages"
+      - echo "Installing development/testing packages"
       - pip install -r requirements-dev.txt --upgrade
+      - pip install -r docs/requirements.txt --upgrade
       - echo "Installing main package"
       - pip install -e . --upgrade
       - echo "Listing all installed packages"
@@ -40,7 +41,6 @@ phases:
       - pre-commit run -a
       - prerelease --no-input
       - echo "Building Sphinx documentation"
-      - pip install -r docs/requirements.txt --upgrade
       - SPHINXOPTS="-W" make --directory=docs html # the -W flag treats warnings as errors to cause build failures
 
   build:
