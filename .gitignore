@@ -22,6 +22,9 @@ docs/build
 tests/**/snapshots/*_actual.png
 tests/**/snapshots/*_diff.png
 
+dist/
+build/
+
 # test coverage
 tests/__coverage__
 test/__coverage__
