@@ -64,6 +64,9 @@ Resources:
           - Name: PUBLISH_TO_PYPI
             Type: PLAINTEXT
             Value: "0"
+          - Name: PYTEST_RANDOMLY_SEED
+            Type: PLAINTEXT
+            Value: ""
 
       Name:
         Ref: "AWS::StackName"
