@@ -41,6 +41,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
+          ref: ${{ github.head_ref }}
           fetch-depth: 1
 
       - name: Set up Python
@@ -108,4 +109,4 @@ jobs:
 
       - name: Run prerelease to check packaging compatibilty
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == 3.7
-        run: python3 prerelease.py --no-input
+        run: prerelease --no-input
