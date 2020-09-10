@@ -14,7 +14,7 @@ setup(
     license="MIT",
     packages=find_packages("src"),
     package_dir={"": "src"},
-    install_requires=[],
+    install_requires=['importlib-metadata ~= 1.0 ; python_version < "3.8"'],
     zip_safe=False,
     include_package_data=True,
     classifiers=[

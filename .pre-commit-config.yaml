@@ -1,4 +1,4 @@
-minimum_pre_commit_version: '2.4.0'
+minimum_pre_commit_version: '2.7.1'
 fail_fast: false
 repos:
 
@@ -79,6 +79,12 @@ repos:
     hooks:
     -   id: mypy
         exclude: prerelease.py
+
+-   repo: https://github.com/Lucas-C/pre-commit-hooks-markup
+    rev: v1.0.0
+    hooks:
+    -   id: rst-linter
+        exclude: docs
 
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.6.0  # pick a git hash / tag to point to
