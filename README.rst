@@ -9,19 +9,19 @@ Steps to create repo:
    - Check box that says `include all branches`
    - Set repo to public
    - Publish repo
-   - To stop error messages about `master` and `development` branches not sharing any history, clone the repo, checkout development and run `git rebase -i origin/master` then `git push -f`
+   - To stop error messages about `main` and `development` branches not sharing any history, clone the repo, checkout development and run `git rebase -i origin/master` then `git push -f`
    - In Actions -> Dev: click Run workflow. Wait until workflow finishes
    - In Settings -> Security & analysis: enable Dependabot security updates
    - In Setting -> Options, under Merge Button:
       - Make sure "automatically delete head branches" is checked
       - Make sure squash merging" is NOT checked
    - In Settings -> Branches:
-      - Add Rule with [dm][ea][vs][et][le][or]* specified as Branch pattern name
+      - Add Rule with [dm][ea][vi][en]* specified as Branch pattern name
          - check Require pull requests reviews before merging
          - check Dismiss stale pull requests
          - check Require Review from Code Owners
          - check Require status checks before merging
-         - Under status checks, check all of the python checks (6 total)
+         - Under status checks, check all of the python checks (4 total)
          - check Include administrators
          - check Restrict who can push to matching branches
 
