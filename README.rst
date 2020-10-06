@@ -14,7 +14,7 @@ Steps to create repo:
    - In Settings -> Security & analysis: enable Dependabot security updates
    - In Setting -> Options, under Merge Button:
       - Make sure "automatically delete head branches" is checked
-      - Make sure squash merging" is NOT checked
+      - Make sure "squash merging" and "rebase merging" are NOT checked
    - In Settings -> Branches:
       - Add Rule with [dm][ea][vi][en]* specified as Branch pattern name
          - check Require pull requests reviews before merging
