@@ -36,6 +36,8 @@ jobs:
             IS_FASTEST_JOB: true
           - os: "ubuntu-18.04"
             IS_LINUX: true
+          - os: "macos-10.15"
+            IS_MAC: true
           - os: "windows-2019"
             IS_WINDOWS: true
     env:
@@ -58,7 +60,7 @@ jobs:
           python -m venv venv
 
       - name: Activate virtual environment (Linux/MacOS)
-        if: matrix.IS_LINUX == true
+        if: matrix.IS_LINUX == true || matrix.IS_MAC == true
         run: . venv/bin/activate
       - name: Activate virtual environment (Windows)
         if: matrix.IS_WINDOWS == true
