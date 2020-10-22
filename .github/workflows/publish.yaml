@@ -48,6 +48,16 @@ jobs:
           python -c "import sys; print(sys.version)"
           python -m venv venv
 
+      - name: Extract version number # Adapted from: https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
+        shell: bash
+        run: echo '##[set-output name=package-version;]$(echo $(grep -Po "(?<=    version=\")[0-9.]+" setup.py))'
+        id: extract_version
+
+
+      - name: Confirming tag not already present on remote (if publishing)
+        if: github.event.inputs.publish_to_pypi == '1' && matrix.IS_FASTEST_JOB == true
+        run: ! git ls-remote --tags origin | grep ${{ steps.extract_version.outputs.package-version }}
+
       - name: Cache Pre-commit hooks
         uses: actions/cache@v2
         env:
@@ -137,42 +147,13 @@ jobs:
           python setup.py sdist
           python setup.py bdist_wheel
 
-
-  create_tag:
-    needs: test
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - "ubuntu-18.04"
-    name: Creating tag on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-
-      - name: Extract version number # Adapted from: https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
-        shell: bash
-        run: echo '##[set-output name=package-version;]$(echo $(grep -Po "(?<=    version=\")[0-9.]+" setup.py))'
-        id: extract_version
-
-
-      - name: Tagging commit
-        run: |
-          echo "About to tag with: ${{ steps.extract_version.outputs.package-version }}"
-          git tag "${{ steps.extract_version.outputs.package-version }}"
-
-      - name: Pushing Tag
-        if: github.event.inputs.publish_to_pypi == '1'
-        run: git push --tags
-
-
+# TODO (Eli 10/22/20): add step to publish to PyPi Test server and test installation before publishing to PyPi
+# TODO (Eli 10/22/20): add step to install package from PyPi (and test PyPi first) and confirm that at least it can be imported in Python without an error
   publish:
-    needs: [test, create_tag]
+    needs: [test]
     strategy:
       fail-fast: false
+      # If your code is pure python, then you only need to publish in one environment. If your code creates a more complicated wheel (i.e. uses Cython), then re-enable all the different matrix environments
       matrix:
         os:
           - "ubuntu-18.04"
@@ -180,11 +161,6 @@ jobs:
         python-version:
             - 3.7
             # - 3.8
-        include:
-          - os: "ubuntu-18.04"
-            IS_LINUX: true
-          # - os: "windows-2019"
-          #   IS_WINDOWS: true
     name: Publish for Python ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -203,12 +179,12 @@ jobs:
           python -m venv venv
 
       - name: Activate virtual environment (Linux/MacOS)
-        if: matrix.IS_LINUX == true
+        if: runner.os == 'Linux' || runner.os == 'macOS'
         run: . venv/bin/activate
 
-      # - name: Activate virtual environment (Windows)
-      #   if: matrix.IS_WINDOWS == true
-      #   run: venv\Scripts\Activate.ps1
+      - name: Activate virtual environment (Windows)
+        if: runner.os == 'Windows'
+        run: venv\Scripts\Activate.ps1
 
       - name: Display Pip Version and confirm environment empty
         run: |
@@ -238,3 +214,33 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
 
         run: twine upload dist/*
+
+  create_tag:
+    needs: [test, publish]
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - "ubuntu-18.04"
+    name: Creating tag on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Extract version number # Adapted from: https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
+        shell: bash
+        run: echo '##[set-output name=package-version;]$(echo $(grep -Po "(?<=    version=\")[0-9.]+" setup.py))'
+        id: extract_version
+
+
+      - name: Tagging commit
+        run: |
+          echo "About to tag with: ${{ steps.extract_version.outputs.package-version }}"
+          git tag "${{ steps.extract_version.outputs.package-version }}"
+
+      - name: Pushing Tag
+        if: github.event.inputs.publish_to_pypi == '1'
+        run: git push --tags
