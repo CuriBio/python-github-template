@@ -56,7 +56,7 @@ jobs:
 
       - name: Confirming tag not already present on remote (if publishing)
         if: github.event.inputs.publish_to_pypi == '1' && matrix.IS_FASTEST_JOB == true
-        run: ! git ls-remote --tags origin | grep ${{ steps.extract_version.outputs.package-version }}
+        run: if [$(git ls-remote --tags origin | grep ${{ steps.extract_version.outputs.package-version }}) = '']; then echo Tag does not exist on remote; else echo Tag already exists on remote && exit 1; fi
 
       - name: Cache Pre-commit hooks
         uses: actions/cache@v2
@@ -234,7 +234,6 @@ jobs:
         shell: bash
         run: echo '##[set-output name=package-version;]$(echo $(grep -Po "(?<=    version=\")[0-9.]+" setup.py))'
         id: extract_version
-
 
       - name: Tagging commit
         run: |
