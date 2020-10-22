@@ -57,7 +57,7 @@ jobs:
           cache-name: cache-pre-commit-hooks
         if: matrix.IS_FASTEST_JOB == true
         with:
-          path: ~/.precommit_cache # Eli (10/22/20): Having the pre-commit cache inside the repo creates problems with Pytest detecting test files inside the cache
+          path: ./.precommit_cache
           key: ${{ matrix.os }}-${{ matrix.python-version }}-build-${{ env.cache-name }}-${{ hashFiles('**/.pre-commit-config.yaml') }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.python-version }}-build-${{ env.cache-name }}-
@@ -84,7 +84,7 @@ jobs:
       - name: Run pre-commit hooks
         if: matrix.IS_FASTEST_JOB == true
         env:
-          PRE_COMMIT_HOME: ~/.precommit_cache
+          PRE_COMMIT_HOME: ./.precommit_cache
         # only enable pre-commit on the fastest job
         run: |
           pre-commit install
@@ -92,11 +92,11 @@ jobs:
 
       - name: Run Tests with randomly generated seed
         if: github.event.inputs.randomlyseed == ''
-        run: pytest -xsvv --cov-report=xml --full-ci --include-slow-tests
+        run: pytest -xsvv --cov-report=xml --ignore=./precommit_cache --full-ci --include-slow-tests
 
       - name: Run Tests with supplied pytest-randomly seed
         if: github.event.inputs.randomlyseed != ''
-        run: pytest -xsvv --cov-report=xml --randomly-seed=${{ github.event.inputs.randomlyseed }} --full-ci --include-slow-tests
+        run: pytest -xsvv --cov-report=xml --ignore=./precommit_cache --full-ci --include-slow-tests --randomly-seed=${{ github.event.inputs.randomlyseed }}
 
       - name: Archive Pytest Code Coverage if failure
         if: ${{ failure() }}
