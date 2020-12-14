@@ -129,5 +129,5 @@ jobs:
           fail_ci_if_error: true
 
       - name: Run prerelease to check packaging compatibilty
-        if: matrix.IS_FASTEST_JOB == true
+        # Eli (12/14/20): important to check this on all platforms (not just the fastest job) because sometimes the pre-installed dependencies vary
         run: python prerelease.py --no-input
