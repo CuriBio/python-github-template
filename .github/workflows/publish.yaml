@@ -169,7 +169,7 @@ jobs:
           - "ubuntu-20.04"
           - "windows-2019"
           - "macos-10.15"
-          - "macos-11.0"
+          # - "macos-11.0"
         python-version:
             - 3.7
             - 3.8
@@ -239,7 +239,7 @@ jobs:
           - "ubuntu-20.04"
           - "windows-2019"
           - "macos-10.15"
-          - "macos-11.0"
+          # - "macos-11.0"
         python-version:
             - 3.7
             - 3.8
@@ -319,7 +319,7 @@ jobs:
           - "ubuntu-20.04"
           - "windows-2019"
           - "macos-10.15"
-          - "macos-11.0"
+          # - "macos-11.0"
         python-version:
             - 3.7
             - 3.8
@@ -390,7 +390,7 @@ jobs:
           - "ubuntu-20.04"
           - "windows-2019"
           - "macos-10.15"
-          - "macos-11.0"
+          # - "macos-11.0"
         python-version:
             - 3.7
             - 3.8
