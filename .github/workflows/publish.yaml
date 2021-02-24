@@ -8,10 +8,13 @@ on:
         description: 'Pytest Randomly Seed'
         required: false
         default: ''
-      publish_to_pypi:
-        description: 'Publish to PyPi'
+      dry_run:
+        description: 'Do a dry run and do not publish'
         required: false
         default: '0'
+  push:
+    branches:
+      - main
 
 jobs:
   test:
@@ -31,7 +34,7 @@ jobs:
         include:
           # only enable coverage on the fastest job
           - os: "ubuntu-20.04"
-            python-version: "3.8" # Eli (11/12/20): pylint doesn't yet support Python 3.9, so can't run pre-commit yet
+            python-version: "3.9"
             IS_FASTEST_JOB: true
 
     name: Test code before publishing in Python ${{ matrix.python-version }} on ${{ matrix.os }}
@@ -62,8 +65,8 @@ jobs:
           echo "Version: ${{ steps.extract_version.outputs.package-version }}"
 
       - name: Confirming tag not already present on remote (if publishing)
-        if: github.event.inputs.publish_to_pypi == '1' && matrix.IS_FASTEST_JOB == true
-        run: if [$(git ls-remote --tags origin | grep ${{ steps.extract_version.outputs.package-version }}) = '']; then echo Tag does not exist on remote; else echo Tag already exists on remote && exit 1; fi
+        if: github.event.inputs.dry_run != '1' && matrix.IS_FASTEST_JOB == true
+        run: if [$(git ls-remote --tags origin | grep v${{ steps.extract_version.outputs.package-version }}) = '']; then echo Tag does not exist on remote; else echo Tag already exists on remote && exit 1; fi
 
       - name: Cache Pre-commit hooks
         uses: actions/cache@v2.1.4
@@ -102,7 +105,7 @@ jobs:
         run: if [ "${{ steps.extract_branch.outputs.sha-of-current-branch}}" = "${{ steps.extract_branch.outputs.sha-of-main-branch}}" ] ; then echo "Running on main branch."; else echo "Not running on main branch."; fi
 
       - name: Fail if attempting to publish from a branch other than main
-        if: runner.os == 'Linux' && github.event.inputs.publish_to_pypi == '1'
+        if: runner.os == 'Linux' && github.event.inputs.dry_run != '1'
         run: if [ "${{ steps.extract_branch.outputs.sha-of-current-branch}}" = "${{ steps.extract_branch.outputs.sha-of-main-branch}}" ] ; then echo "Running on main branch, can proceed to publish."; else exit 1; fi
 
       - name: Activate virtual environment (Linux/MacOS)
@@ -118,7 +121,9 @@ jobs:
           pip -V
           pip freeze
       - name: Install Dev Dependencies
-        run: pip install -r requirements-dev.txt
+        run: |
+          pip install -r requirements-dev.txt
+          pip install -r docs/requirements.txt
 
       - name: Install Main Package
         run: pip install -e .
@@ -147,10 +152,37 @@ jobs:
       - name: Run prerelease to check packaging compatibilty
         run: prerelease --no-input
 
-      - name: Build package for release
-        run: |
-          python setup.py sdist
-          python setup.py bdist_wheel
+      - name: Build wheel for release
+        run: python setup.py bdist_wheel
+
+      # If a platform-specific wheel is generated, sometimes they may need to be renamed
+      # - name: Rename wheel for Linux (Python 3.7)
+      #   if: runner.os == 'Linux' && matrix.python-version == 3.7
+      #   run: |
+      #     cp ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp37-cp37m-linux_x86_64.whl ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp37-cp37m-manylinux1_x86_64.whl
+      #     rm ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp37-cp37m-linux_x86_64.whl
+
+      # - name: Rename wheel for Linux (Python 3.8)
+      #   if: runner.os == 'Linux' && matrix.python-version == 3.8
+      #   run: |
+      #     cp ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp38-cp38-linux_x86_64.whl ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp38-cp38-manylinux1_x86_64.whl
+      #     rm ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp38-cp38-linux_x86_64.whl
+
+      # - name: Rename wheel for Linux (Python 3.9)
+      #   if: runner.os == 'Linux' && matrix.python-version == 3.9
+      #   run: |
+      #     cp ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp39-cp39-linux_x86_64.whl ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp39-cp39-manylinux1_x86_64.whl
+      #     rm ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp39-cp39-linux_x86_64.whl
+
+      - name: Build sdist for release (Linux)
+        if: matrix.IS_FASTEST_JOB == true
+        run: python setup.py sdist
+
+      - name: Confirm no modifications to the repository files occurred when running the test suite
+        if: matrix.IS_FASTEST_JOB == true # only enable pre-commit on the fastest job
+        env:
+          PRE_COMMIT_HOME: ./.precommit_cache
+        run: pre-commit run git-dirty -a
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
@@ -165,7 +197,6 @@ jobs:
       fail-fast: false
       matrix: # if publishing pure python code, then disable all except one os and python version combination. But if publishing code that uses Cython then likely all combinations will be needed
         os:
-          - "ubuntu-18.04"
           - "ubuntu-20.04"
           - "windows-2019"
           - "macos-10.15"
@@ -216,7 +247,7 @@ jobs:
           path: dist
 
       - name: Uploading to Test PyPI
-        if: github.event.inputs.publish_to_pypi == '1'
+        if: github.event.inputs.dry_run != '1'
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
@@ -224,7 +255,7 @@ jobs:
         run: twine upload --repository testpypi dist/*
 
       - name: Sleep for 360 seconds to allow Test PyPI Index to update before proceeding to the next step
-        if: github.event.inputs.publish_to_pypi == '1'
+        if: github.event.inputs.dry_run != '1'
         uses: juliangruber/sleep-action@v1
         with:
           time: 360s
@@ -274,6 +305,12 @@ jobs:
           pip -V
           pip freeze
 
+      - name: Download built dist folder from previous step
+        uses: actions/download-artifact@v2
+        with:
+          name: dist--${{ matrix.os }}--${{ matrix.python-version }}
+          path: dist
+
       - name: Extract package info # Adapted from: https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
         shell: bash
         run: |
@@ -282,15 +319,12 @@ jobs:
         id: extract_package_info
 
       - name: Install Main Package From Test PyPI
-        if: github.event.inputs.publish_to_pypi == '1'
+        if: github.event.inputs.dry_run != '1'
         run: python .github/workflows/extract_package_info.py install_from_test_pypi
 
-      - name: Install Main Package From Local repo as test since not publishing to PyPI
-        if: github.event.inputs.publish_to_pypi != '1'
-        run: |
-          echo Extracted package name that would have been used when publishing: ${{ steps.extract_package_info.outputs.package-name }}
-          echo Extracted package version that would have been used when publishing: ${{ steps.extract_package_info.outputs.package-version }}
-          pip install -e .
+      - name: Install Main Package From built wheel file as test since not publishing to PyPI
+        if: github.event.inputs.dry_run == '1'
+        run: python .github/workflows/extract_package_info.py install_from_dist
 
       - name: Confirm no import errors when opening package
         run: python -c "import ${{ steps.extract_package_info.outputs.package-name }}"
@@ -315,7 +349,6 @@ jobs:
       fail-fast: false
       matrix: # if publishing pure python code, then disable all except one os and python version combination. But if publishing code that uses Cython then likely all combinations will be needed
         os:
-          - "ubuntu-18.04"
           - "ubuntu-20.04"
           - "windows-2019"
           - "macos-10.15"
@@ -366,7 +399,7 @@ jobs:
           path: dist
 
       - name: Uploading to PyPi
-        if: github.event.inputs.publish_to_pypi == '1'
+        if: github.event.inputs.dry_run != '1'
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
@@ -374,7 +407,7 @@ jobs:
         run: twine upload dist/*
 
       - name: Sleep for 360 seconds to allow PyPI Index to update before proceeding to the next step
-        if: github.event.inputs.publish_to_pypi == '1'
+        if: github.event.inputs.dry_run != '1'
         uses: juliangruber/sleep-action@v1
         with:
           time: 360s
@@ -425,6 +458,12 @@ jobs:
           pip -V
           pip freeze
 
+      - name: Download built dist folder from previous step
+        uses: actions/download-artifact@v2
+        with:
+          name: dist--${{ matrix.os }}--${{ matrix.python-version }}
+          path: dist
+
       - name: Extract package info # Adapted from: https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
         shell: bash
         run: |
@@ -433,15 +472,12 @@ jobs:
         id: extract_package_info
 
       - name: Install Main Package From PyPI
-        if: github.event.inputs.publish_to_pypi == '1'
+        if: github.event.inputs.dry_run != '1'
         run: python .github/workflows/extract_package_info.py install_from_pypi
 
-      - name: Install Main Package From Local repo as test since not publishing to PyPI
-        if: github.event.inputs.publish_to_pypi != '1'
-        run: |
-          echo Extracted package name that would have been used when publishing: ${{ steps.extract_package_info.outputs.package-name }}
-          echo Extracted package version that would have been used when publishing: ${{ steps.extract_package_info.outputs.package-version }}
-          pip install -e .
+      - name: Install Main Package From built wheel file as test since not publishing to PyPI
+        if: github.event.inputs.dry_run == '1'
+        run: python .github/workflows/extract_package_info.py install_from_dist
 
       - name: Confirm no import errors when opening package
         run: python -c "import ${{ steps.extract_package_info.outputs.package-name }}"
@@ -482,9 +518,10 @@ jobs:
 
       - name: Tagging commit
         run: |
-          echo "About to tag with: ${{ steps.extract_version.outputs.package-version }}"
-          git tag "${{ steps.extract_version.outputs.package-version }}"
+          echo "About to tag with: v${{ steps.extract_version.outputs.package-version }}"
+          git tag "v${{ steps.extract_version.outputs.package-version }}"
+          git tag -l
 
       - name: Pushing Tag
-        if: github.event.inputs.publish_to_pypi == '1'
+        if: github.event.inputs.dry_run != '1'
         run: git push --tags
