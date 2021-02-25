@@ -155,24 +155,7 @@ jobs:
       - name: Build wheel for release
         run: python setup.py bdist_wheel
 
-      # If a platform-specific wheel is generated, sometimes they may need to be renamed
-      # - name: Rename wheel for Linux (Python 3.7)
-      #   if: runner.os == 'Linux' && matrix.python-version == 3.7
-      #   run: |
-      #     cp ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp37-cp37m-linux_x86_64.whl ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp37-cp37m-manylinux1_x86_64.whl
-      #     rm ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp37-cp37m-linux_x86_64.whl
-
-      # - name: Rename wheel for Linux (Python 3.8)
-      #   if: runner.os == 'Linux' && matrix.python-version == 3.8
-      #   run: |
-      #     cp ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp38-cp38-linux_x86_64.whl ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp38-cp38-manylinux1_x86_64.whl
-      #     rm ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp38-cp38-linux_x86_64.whl
-
-      # - name: Rename wheel for Linux (Python 3.9)
-      #   if: runner.os == 'Linux' && matrix.python-version == 3.9
-      #   run: |
-      #     cp ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp39-cp39-linux_x86_64.whl ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp39-cp39-manylinux1_x86_64.whl
-      #     rm ./dist/mantarray_waveform_analysis-${{ steps.extract_version.outputs.package-version }}-cp39-cp39-linux_x86_64.whl
+      # IMPORTANT! If a platform-specific wheel is generated, sometimes they may need to be renamed or there can be unexplained (Eli 2/25/21) issues getting the to install. See example: https://github.com/CuriBio/mantarray-waveform-analysis/blob/b4ef677f20c16e14156f941c6581b50802773010/.github/workflows/publish.yaml#L158
 
       - name: Build sdist for release (Linux)
         if: matrix.IS_FASTEST_JOB == true
